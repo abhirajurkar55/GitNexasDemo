@@ -1,0 +1,29 @@
+import csv
+
+expected_headers =['Name','Email',"PhoneNo",'Address']
+
+def validate_headers(file_path):
+    try:
+        with open(file_path,'r')as file:
+            reader =csv.reader(file)
+            header = next(reader)
+
+            if header == expected_headers:
+                return True
+
+            else:
+                return False
+
+    except Exception as e:
+        print(f"error reading file;{e}")
+        return False
+
+header_lambda_match = lambda header:header== expected_headers
+
+file_path = "samples.csv"
+
+if validate_headers(file_path):
+    print("header match you can process")
+
+else:
+    print("mistach found")
