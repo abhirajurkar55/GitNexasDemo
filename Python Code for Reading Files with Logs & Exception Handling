@@ -1,0 +1,47 @@
+import pandas as pd
+import logging
+from pyspark.sql import SparkSession
+from pyspark.sql.utils import AnalysisException
+
+# Configure Logging
+logging.basicConfig(
+    filename="file_processing.log",
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s"
+)
+
+def read_csv_pandas(file_path):
+    """Read CSV file using Pandas with exception handling."""
+    try:
+        logging.info(f"Attempting to read file using Pandas: {file_path}")
+        df = pd.read_csv(file_path)
+        logging.info(f"Successfully read file: {file_path} with {df.shape[0]} rows and {df.shape[1]} columns.")
+        return df
+    except FileNotFoundError:
+        logging.error(f"File not found: {file_path}")
+    except pd.errors.EmptyDataError:
+        logging.error(f"File is empty: {file_path}")
+    except Exception as e:
+        logging.error(f"Error while reading file with Pandas: {str(e)}")
+
+def read_csv_spark(file_path):
+    """Read CSV file using PySpark with exception handling."""
+    spark = SparkSession.builder.appName("FileReader").getOrCreate()
+    try:
+        logging.info(f"Attempting to read file using PySpark: {file_path}")
+        df = spark.read.option("header", "true").csv(file_path)
+        logging.info(f"Successfully read file: {file_path} with {df.count()} rows and {len(df.columns)} columns.")
+        return df
+    except AnalysisException as ae:
+        logging.error(f"Spark AnalysisException: {str(ae)}")
+    except Exception as e:
+        logging.error(f"Error while reading file with Spark: {str(e)}")
+
+# File path (update accordingly)
+csv_file_path = "data/sample.csv"
+
+# Read file using Pandas
+df_pandas = read_csv_pandas(csv_file_path)
+
+# Read file using PySpark
+df_spark = read_csv_spark(csv_file_path)
