@@ -55,3 +55,28 @@ if json_data:
     rdd = spark.sparkContext.parallelize([json.dumps(json_data)])  # Convert to RDD
     df = spark.read.json(rdd)  # Read JSON
     df.show()  # Display data
+
+# api call
+baisc
+
+import requests
+
+# API URL
+api_url = "https://jsonplaceholder.typicode.com/posts"
+
+# Sending GET request
+response = requests.get(api_url)
+
+# Checking response status
+if response.status_code == 200:
+    data = response.json()  # Convert JSON response to Python dict
+    print(data[:5])  # Print first 5 records
+else:
+    print(f"API call failed with status code {response.status_code}")
+
+# amking api call in loops
+for i in range(1, 6):  # Loop through multiple API calls
+    response = requests.get(f"https://jsonplaceholder.typicode.com/posts/{i}")
+    if response.status_code == 200:
+        print(response.json())
+
