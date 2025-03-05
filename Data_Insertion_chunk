@@ -1,0 +1,58 @@
+# data insertion in chunk For PostgreSQL/MySQL Using SQLAlchemy 
+import sqlalchemy
+import pandas as pd
+from sqlalchemy import create_engine
+
+# Database connection (modify according to your DB)
+DB_USER = "your_user"
+DB_PASSWORD = "your_password"
+DB_HOST = "your_host"
+DB_PORT = "your_port"
+DB_NAME = "your_database"
+TABLE_NAME = "your_table"
+
+# Create engine
+engine = create_engine(f"mysql+pymysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}")
+
+# Function to insert data in chunks
+def insert_data_in_chunks(data, chunk_size=50000):
+    for i in range(0, len(data), chunk_size):
+        chunk = data[i:i+chunk_size]
+        chunk.to_sql(TABLE_NAME, con=engine, if_exists="append", index=False)
+        print(f"Inserted records: {i} to {i+chunk_size}")
+
+# Generating dummy 10M records
+data = pd.DataFrame({
+    "id": range(1, 10_000_001),
+    "name": [f"Name_{i}" for i in range(1, 10_000_001)]
+})
+
+# Insert into DB
+insert_data_in_chunks(data)
+
+
+
+
+
+
+
+#For MongoDB Using PyMongo
+from pymongo import MongoClient
+
+# MongoDB Connection
+client = MongoClient("mongodb://localhost:27017/")
+db = client["your_database"]
+collection = db["your_collection"]
+
+# Function to insert data in chunks
+def insert_data_in_chunks(data, chunk_size=50000):
+    for i in range(0, len(data), chunk_size):
+        chunk = data[i:i+chunk_size]
+        collection.insert_many(chunk)
+        print(f"Inserted records: {i} to {i+chunk_size}")
+
+# Generating dummy 10M records
+data = [{"id": i, "name": f"Name_{i}"} for i in range(1, 10_000_001)]
+
+# Insert into MongoDB
+insert_data_in_chunks(data)
